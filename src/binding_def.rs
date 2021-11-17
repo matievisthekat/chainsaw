@@ -3,12 +3,12 @@ use crate::expr::Expr;
 use crate::utils;
 
 #[derive(Debug, PartialEq)]
-pub struct Binding {
+pub struct BindingDef {
   name: String,
   val: Expr,
 }
 
-impl Binding {
+impl BindingDef {
   pub fn new(s: &str) -> Result<(Self, &str), String> {
     let s = utils::tag("let", s)?;
     let (_, s) = utils::extract_whitespace_required(s)?;
@@ -22,7 +22,7 @@ impl Binding {
     let (val, s) = Expr::new(s)?;
 
     Ok((
-      Self {
+      BindingDef {
         name: name.to_string(),
         val,
       },
@@ -43,7 +43,7 @@ mod tests {
   #[test]
   fn cannot_parse_binding_without_space_after_let() {
     assert_eq!(
-      Binding::new("letaaa=1+2"),
+      BindingDef::new("letaaa=1+2"),
       Err("expected a space".to_string()),
     );
   }
@@ -51,9 +51,9 @@ mod tests {
   #[test]
   fn parse_binding_def() {
     assert_eq!(
-      Binding::new("let a = 10 / 2"),
+      BindingDef::new("let a = 10 / 2"),
       Ok((
-        Binding {
+        BindingDef {
           name: "a".to_string(),
           val: Expr::Operation {
             lhs: Number(10),

@@ -1,4 +1,4 @@
-pub mod bindings;
+pub mod binding_def;
 pub mod expr;
 pub mod values;
 
