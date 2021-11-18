@@ -1,3 +1,5 @@
+const WHITESPACE: &[char] = &[' ', '\n'];
+
 pub(crate) fn take_while(accept: impl Fn(char) -> bool, s: &str) -> (&str, &str) {
   let extracted_end = s
     .char_indices()
@@ -28,11 +30,15 @@ pub(crate) fn extract_digits(s: &str) -> Result<(&str, &str), String> {
 }
 
 pub(crate) fn extract_whitespace(s: &str) -> (&str, &str) {
-  take_while(|c| c == ' ', s)
+  take_while(|c| WHITESPACE.contains(&c), s)
 }
 
 pub(crate) fn extract_whitespace_required(s: &str) -> Result<(&str, &str), String> {
-  take_while_required(|c| c == ' ', s, "expected a space".to_string())
+  take_while_required(
+    |c| WHITESPACE.contains(&c),
+    s,
+    "expected whitespace".to_string(),
+  )
 }
 
 pub(crate) fn extract_ident(s: &str) -> Result<(&str, &str), String> {
@@ -74,7 +80,7 @@ mod tests {
   fn do_not_extract_spaces_when_input_does_not_start_with_them() {
     assert_eq!(
       extract_whitespace_required("blah"),
-      Err("expected a space".to_string()),
+      Err("expected whitespace".to_string()),
     );
   }
 
@@ -134,5 +140,18 @@ mod tests {
   #[test]
   fn tag_let() {
     assert_eq!(tag("let", "let a"), Ok(" a"));
+  }
+
+  #[test]
+  fn extract_newlines_or_spaces() {
+    assert_eq!(extract_whitespace(" \n   \n\nabc"), (" \n   \n\n", "abc"));
+  }
+
+  #[test]
+  fn do_not_extract_spaces_required_when_input_does_not_start_with_them() {
+    assert_eq!(
+      extract_whitespace_required("blah"),
+      Err("expected whitespace".to_string()),
+    );
   }
 }

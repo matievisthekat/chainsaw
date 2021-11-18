@@ -4,7 +4,7 @@ use crate::values::Value;
 
 #[derive(Debug, PartialEq)]
 pub struct BindingUsage {
-  name: String,
+  pub name: String,
 }
 
 impl BindingUsage {
