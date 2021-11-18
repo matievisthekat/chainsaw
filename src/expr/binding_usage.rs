@@ -1,4 +1,4 @@
-use crate::environment::Environment;
+use crate::env::Env;
 use crate::utils;
 use crate::values::Value;
 
@@ -19,7 +19,7 @@ impl BindingUsage {
     ))
   }
 
-  pub(crate) fn eval(&self, env: &Environment) -> Result<Value, String> {
+  pub(crate) fn eval(&self, env: &Env) -> Result<Value, String> {
     env.get_binding_value(&self.name)
   }
 }
@@ -43,7 +43,7 @@ mod tests {
 
   #[test]
   fn eval_existing_binding_usage() {
-    let mut env = Environment::default();
+    let mut env = Env::default();
     env.store_binding("foo".to_string(), Value::Number(10));
 
     assert_eq!(
@@ -57,7 +57,7 @@ mod tests {
 
   #[test]
   fn eval_non_existent_binding_usage() {
-    let empty_env = Environment::default();
+    let empty_env = Env::default();
 
     assert_eq!(
       BindingUsage {

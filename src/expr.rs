@@ -1,6 +1,7 @@
 pub mod binding_usage;
 pub mod block;
 
+use crate::env::Env;
 use crate::utils;
 use crate::values::Value;
 use binding_usage::BindingUsage;
@@ -72,9 +73,9 @@ impl Expr {
         Number::new(s).map(|(number, s)| (Self::Number(number), s))
     }
 
-    pub(crate) fn eval(&self) -> Value {
+    pub(crate) fn eval(&self, env: &Env) -> Result<Value, String> {
         match self {
-            Self::Number(Number(n)) => Value::Number(*n),
+            Self::Number(Number(n)) => Ok(Value::Number(*n)),
             Self::Operation { lhs, rhs, op } => {
                 let Number(lhs) = lhs;
                 let Number(rhs) = rhs;
@@ -86,9 +87,10 @@ impl Expr {
                     Operator::Div => lhs / rhs,
                 };
 
-                Value::Number(result)
+                Ok(Value::Number(result))
             }
-            _ => todo!(),
+            Self::BindingUsage(binding_usage) => binding_usage.eval(env),
+            Self::Block(block) => block.eval(env),
         }
     }
 }
@@ -161,8 +163,8 @@ mod tests {
                 rhs: Number(10),
                 op: Operator::Add,
             }
-            .eval(),
-            Value::Number(20),
+            .eval(&Env::default()),
+            Ok(Value::Number(20)),
         );
     }
 
@@ -174,8 +176,8 @@ mod tests {
                 rhs: Number(5),
                 op: Operator::Sub,
             }
-            .eval(),
-            Value::Number(-4),
+            .eval(&Env::default()),
+            Ok(Value::Number(-4)),
         );
     }
 
@@ -187,8 +189,8 @@ mod tests {
                 rhs: Number(6),
                 op: Operator::Mul,
             }
-            .eval(),
-            Value::Number(30),
+            .eval(&Env::default()),
+            Ok(Value::Number(30)),
         );
     }
 
@@ -200,8 +202,8 @@ mod tests {
                 rhs: Number(20),
                 op: Operator::Div,
             }
-            .eval(),
-            Value::Number(10),
+            .eval(&Env::default()),
+            Ok(Value::Number(10)),
         );
     }
 
@@ -233,6 +235,31 @@ mod tests {
                 }),
                 "",
             )),
+        );
+    }
+
+    #[test]
+    fn eval_binding_usage() {
+        let mut env = Env::default();
+        env.store_binding("ten".to_string(), Value::Number(10));
+
+        assert_eq!(
+            Expr::BindingUsage(BindingUsage {
+                name: "ten".to_string(),
+            })
+            .eval(&env),
+            Ok(Value::Number(10)),
+        );
+    }
+
+    #[test]
+    fn eval_block() {
+        assert_eq!(
+            Expr::Block(Block {
+                statements: vec![Statement::Expr(Expr::Number(Number(10)))],
+            })
+            .eval(&Env::default()),
+            Ok(Value::Number(10)),
         );
     }
 }

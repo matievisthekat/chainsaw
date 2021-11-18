@@ -1,5 +1,7 @@
 use crate::binding_def::BindingDef;
+use crate::env::Env;
 use crate::expr::Expr;
+use crate::values::Value;
 
 #[derive(Debug, PartialEq)]
 pub enum Statement {
@@ -12,6 +14,16 @@ impl Statement {
     BindingDef::new(s)
       .map(|(binding_def, s)| (Self::BindingDef(binding_def), s))
       .or_else(|_| Expr::new(s).map(|(expr, s)| (Self::Expr(expr), s)))
+  }
+
+  pub(crate) fn eval(&self, env: &mut Env) -> Result<Value, String> {
+    match self {
+      Self::BindingDef(binding_def) => {
+        binding_def.eval(env)?;
+        Ok(Value::Unit)
+      }
+      Self::Expr(expr) => expr.eval(env),
+    }
   }
 }
 
@@ -46,6 +58,26 @@ mod tests {
         }),
         ""
       )),
+    );
+  }
+
+  #[test]
+  fn eval_binding_def() {
+    assert_eq!(
+      Statement::BindingDef(BindingDef {
+        name: "whatever".to_string(),
+        val: Expr::Number(Number(-10)),
+      })
+      .eval(&mut Env::default()),
+      Ok(Value::Unit),
+    );
+  }
+
+  #[test]
+  fn eval_expr() {
+    assert_eq!(
+      Statement::Expr(Expr::Number(Number(5))).eval(&mut Env::default()),
+      Ok(Value::Number(5)),
     );
   }
 }

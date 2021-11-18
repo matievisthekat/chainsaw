@@ -1,4 +1,4 @@
-use crate::environment::Environment;
+use crate::env::Env;
 use crate::expr::Expr;
 use crate::utils;
 
@@ -30,8 +30,9 @@ impl BindingDef {
     ))
   }
 
-  pub(crate) fn eval(&self, env: &mut Environment) {
-    env.store_binding(self.name.clone(), self.val.eval());
+  pub(crate) fn eval(&self, env: &mut Env) -> Result<(), String> {
+    env.store_binding(self.name.clone(), self.val.eval(env)?);
+    Ok(())
   }
 }
 
