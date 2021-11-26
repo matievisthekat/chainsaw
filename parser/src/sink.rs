@@ -1,4 +1,5 @@
 use super::event::Event;
+use crate::parser::ParseError;
 use lexer::Token;
 use rowan::{GreenNode, GreenNodeBuilder, Language};
 use std::mem;
@@ -9,6 +10,7 @@ pub(crate) struct Sink<'t, 'input> {
   tokens: &'t [Token<'input>],
   cursor: usize,
   events: Vec<Event>,
+  errors: Vec<ParseError>,
 }
 
 impl<'t, 'input> Sink<'t, 'input> {
@@ -18,6 +20,7 @@ impl<'t, 'input> Sink<'t, 'input> {
       tokens,
       cursor: 0,
       events,
+      errors: Vec::new(),
     }
   }
 
@@ -54,6 +57,7 @@ impl<'t, 'input> Sink<'t, 'input> {
         }
         Event::AddToken => self.token(),
         Event::FinishNode => self.builder.finish_node(),
+        Event::Error(error) => self.errors.push(error),
         Event::Placeholder => {}
       }
 
@@ -64,7 +68,7 @@ impl<'t, 'input> Sink<'t, 'input> {
   }
 
   fn token(&mut self) {
-    let Token { kind, text } = self.tokens[self.cursor];
+    let Token { kind, text, .. } = self.tokens[self.cursor];
 
     self
       .builder
