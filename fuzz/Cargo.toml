@@ -1,0 +1,19 @@
+[package]
+name = "fuzz"
+version = "0.0.0-alpha"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+ast = {path = "../ast"}
+hir = {path = "../hir"}
+parser = {path = "../parser"}
+libfuzzer-sys = "0.3"
+
+[[bin]]
+name = "parse_lower"
+path = "fuzz_targets/parse_lower.rs"

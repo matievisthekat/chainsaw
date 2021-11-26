@@ -1,2 +1,2 @@
 [workspace]
-members = ["cli", "lexer", "syntax", "parser", "ast", "hir"]
+members = ["cli", "lexer", "syntax", "parser", "ast", "hir", "fuzz"]
