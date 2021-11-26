@@ -1,4 +1,5 @@
 use logos::Logos;
+use num_derive::{FromPrimitive, ToPrimitive};
 
 impl From<SyntaxKind> for rowan::SyntaxKind {
   fn from(kind: SyntaxKind) -> Self {
@@ -6,7 +7,7 @@ impl From<SyntaxKind> for rowan::SyntaxKind {
   }
 }
 
-#[derive(Debug, Copy, Clone, PartialEq, Logos)]
+#[derive(Debug, Copy, Clone, PartialEq, Logos, FromPrimitive, ToPrimitive)]
 pub(crate) enum SyntaxKind {
   Root,
 
