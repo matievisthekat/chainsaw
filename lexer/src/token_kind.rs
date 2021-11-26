@@ -1,5 +1,4 @@
 use logos::Logos;
-use text_size::TextRange;
 
 #[derive(Debug, Copy, Clone, PartialEq, Logos)]
 pub enum TokenKind {

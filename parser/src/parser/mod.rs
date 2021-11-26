@@ -41,7 +41,7 @@ impl<'t, 'input> Parser<'t, 'input> {
 
   pub(crate) fn bump(&mut self) {
     self.expected_kinds.clear();
-    self.source.peek_token().unwrap();
+    self.source.next_token().unwrap();
     self.events.push(Event::AddToken);
   }
   pub(crate) fn expect(&mut self, kind: SyntaxKind) {

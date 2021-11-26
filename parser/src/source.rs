@@ -12,8 +12,27 @@ impl<'t, 'input> Source<'t, 'input> {
     Self { tokens, cursor: 0 }
   }
 
+  pub(crate) fn next_token(&mut self) -> Option<&'t Token<'input>> {
+    self.eat_trivia();
+
+    let token = self.tokens.get(self.cursor)?;
+    self.cursor += 1;
+
+    Some(token)
+  }
+
   pub(crate) fn last_token_range(&self) -> Option<TextRange> {
     self.tokens.last().map(|Token { range, .. }| *range)
+  }
+
+  fn eat_trivia(&mut self) {
+    while self.at_trivia() {
+      self.cursor += 1;
+    }
+  }
+
+  fn at_trivia(&self) -> bool {
+    self.peek_kind_raw().map_or(false, SyntaxKind::is_trivia)
   }
 
   pub(crate) fn peek_token(&mut self) -> Option<&Token> {
@@ -34,15 +53,5 @@ impl<'t, 'input> Source<'t, 'input> {
 
   fn peek_token_raw(&self) -> Option<&Token> {
     self.tokens.get(self.cursor)
-  }
-
-  fn eat_trivia(&mut self) {
-    while self.at_trivia() {
-      self.cursor += 1;
-    }
-  }
-
-  fn at_trivia(&self) -> bool {
-    self.peek_kind_raw().map_or(false, SyntaxKind::is_trivia)
   }
 }
