@@ -1,12 +1,12 @@
 use super::Parser;
-use crate::parser::marker::CompletedMarker;
+use crate::marker::CompletedMarker;
 use syntax::SyntaxKind;
 
-pub(super) fn expr(p: &mut Parser) {
+pub(crate) fn expr(p: &mut Parser) {
   expr_binding_power(p, 0);
 }
 
-pub(super) fn expr_binding_power(p: &mut Parser, minimum_binding_power: u8) {
+pub(crate) fn expr_binding_power(p: &mut Parser, minimum_binding_power: u8) {
   let mut lhs = match p.peek() {
     Some(SyntaxKind::Number) => literal(p),
     Some(SyntaxKind::Identifier) => variable_ref(p),
