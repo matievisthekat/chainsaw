@@ -15,5 +15,5 @@ parser = {path = "../parser"}
 libfuzzer-sys = "0.3"
 
 [[bin]]
-name = "parse_lower"
-path = "fuzz_targets/parse_lower.rs"
+name = "main"
+path = "fuzz_targets/main.rs"
