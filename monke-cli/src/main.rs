@@ -1,21 +1,21 @@
-use monke_lib::parser::Parser;
+use monke_lib::parser::parse;
 use std::io::{self, Write};
 
 fn main() -> io::Result<()> {
-    let stdin = io::stdin();
-    let mut stdout = io::stdout();
+  let stdin = io::stdin();
+  let mut stdout = io::stdout();
 
-    let mut input = String::new();
+  let mut input = String::new();
 
-    loop {
-        write!(stdout, "→ ")?;
-        stdout.flush()?;
+  loop {
+    write!(stdout, "→ ")?;
+    stdout.flush()?;
 
-        stdin.read_line(&mut input)?;
+    stdin.read_line(&mut input)?;
 
-        let parse = Parser::new(&input).parse();
-        println!("{}", parse.debug_tree());
+    let parse = parse(&input);
+    println!("{}", parse.debug_tree());
 
-        input.clear();
-    }
+    input.clear();
+  }
 }
