@@ -28,22 +28,33 @@ impl<'l, 'input> Sink<'l, 'input> {
           kind,
           forward_parent,
         } => {
-          if let Some(fp) = forward_parent {
-            if let Event::StartNode { kind, .. } =
-              { mem::replace(&mut self.events[idx + fp], Event::Placeholder) }
+          let mut kinds = vec![kind];
+
+          let mut idx = idx;
+          let mut forward_parent = forward_parent;
+
+          while let Some(fp) = forward_parent {
+            idx += fp;
+
+            forward_parent = if let Event::StartNode {
+              kind,
+              forward_parent,
+            } = mem::replace(&mut self.events[idx], Event::Placeholder)
             {
-              self.builder.start_node(MonkeLanguage::kind_to_raw(kind));
+              kinds.push(kind);
+              forward_parent
             } else {
               unreachable!()
-            }
+            };
           }
 
-          self.builder.start_node(MonkeLanguage::kind_to_raw(kind));
+          for kind in kinds.into_iter().rev() {
+            self.builder.start_node(MonkeLanguage::kind_to_raw(kind));
+          }
         }
-        Event::StartNodeAt { .. } => unreachable!(),
         Event::AddToken { kind, text } => self.token(kind, text),
         Event::FinishNode => self.builder.finish_node(),
-        Event::Placeholder => {},
+        Event::Placeholder => {}
       }
 
       self.eat_trivia();
