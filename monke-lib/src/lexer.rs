@@ -35,7 +35,7 @@ pub(crate) enum SyntaxKind {
   #[token("set")]
   SetKw,
 
-  #[regex("[A-Za-z][A-Za-z0-9]+")]
+  #[regex("[A-Za-z][A-Za-z0-9]*")]
   Identifier,
 
   #[regex("[0-9]+")]
@@ -91,6 +91,11 @@ mod tests {
   #[test]
   fn lex_set_keyword() {
     check("set", SyntaxKind::SetKw);
+  }
+
+  #[test]
+  fn lex_single_char_identifier() {
+    check("x", SyntaxKind::Identifier);
   }
 
   #[test]
