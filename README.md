@@ -7,8 +7,15 @@
 
 </div>
   
-#### This project is currently just an idea
-An example of what this might look like
+#### Dependency Graph
+
+* blue -> dev dependency
+* green -> build dependency (doesn't contribute code)
+* black -> normal dependency
+
+<img src="https://github.com/matievisthekat/monke/blob/master/dependency_graph.svg" />
+  
+#### Syntax
 ```
 func main:[] -> int32 {
   set x = 2 * 5;
@@ -34,4 +41,4 @@ func main:[] -> int32 {
 }
 ```
 
-If you'd like to help just send me an email (`matievisthekat@gmail.com`), open an issue, or message me on discord (`matievisthekat#1337`)
+If you'd like to help just send me an email (`matievisthekat@gmail.com`) or open an issue
