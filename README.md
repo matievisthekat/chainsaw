@@ -13,7 +13,7 @@
 * green -> build dependency (doesn't contribute code)
 * black -> normal dependency
 
-<img src="https://github.com/matievisthekat/monke/blob/master/dependency_graph.svg" />
+<img src="https://github.com/matievisthekat/monke/blob/master/dependency_graph.png" />
   
 #### Syntax
 ```
