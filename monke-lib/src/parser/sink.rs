@@ -2,6 +2,7 @@ use super::event::Event;
 use crate::lexer::{Lexeme, SyntaxKind};
 use crate::syntax::MonkeLanguage;
 use rowan::{GreenNode, GreenNodeBuilder, Language, SmolStr};
+use std::mem;
 
 pub(super) struct Sink<'l, 'input> {
   builder: GreenNodeBuilder<'static>,
@@ -21,22 +22,28 @@ impl<'l, 'input> Sink<'l, 'input> {
   }
 
   pub(super) fn finish(mut self) -> GreenNode {
-    let mut reordered_events = self.events.clone();
+    for idx in 0..self.events.len() {
+      match mem::replace(&mut self.events[idx], Event::Placeholder) {
+        Event::StartNode {
+          kind,
+          forward_parent,
+        } => {
+          if let Some(fp) = forward_parent {
+            if let Event::StartNode { kind, .. } =
+              { mem::replace(&mut self.events[idx + fp], Event::Placeholder) }
+            {
+              self.builder.start_node(MonkeLanguage::kind_to_raw(kind));
+            } else {
+              unreachable!()
+            }
+          }
 
-    for (idx, event) in self.events.iter().enumerate() {
-      if let Event::StartNodeAt { kind, checkpoint } = event {
-        reordered_events.remove(idx);
-        reordered_events.insert(*checkpoint, Event::StartNode { kind: *kind });
-      }
-    }
-
-    for event in reordered_events {
-      match event {
-        Event::StartNode { kind } => self.builder.start_node(MonkeLanguage::kind_to_raw(kind)),
+          self.builder.start_node(MonkeLanguage::kind_to_raw(kind));
+        }
         Event::StartNodeAt { .. } => unreachable!(),
         Event::AddToken { kind, text } => self.token(kind, text),
         Event::FinishNode => self.builder.finish_node(),
-        Event::Placeholder => unreachable!(),
+        Event::Placeholder => {},
       }
 
       self.eat_trivia();

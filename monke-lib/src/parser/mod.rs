@@ -52,7 +52,10 @@ impl<'l, 'input> Parser<'l, 'input> {
   }
 
   fn start_node(&mut self, kind: SyntaxKind) {
-    self.events.push(Event::StartNode { kind });
+    self.events.push(Event::StartNode {
+      kind,
+      forward_parent: None,
+    });
   }
 
   fn start_node_at(&mut self, checkpoint: usize, kind: SyntaxKind) {

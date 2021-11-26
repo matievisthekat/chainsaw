@@ -7,7 +7,7 @@ pub(super) fn expr(p: &mut Parser) {
 
 pub(super) fn expr_binding_power(p: &mut Parser, minimum_binding_power: u8) {
   let checkpoint = p.checkpoint();
-  let lhs = match p.peek() {
+  let mut lhs = match p.peek() {
     Some(SyntaxKind::Number) => {
       let m = p.start();
       p.bump();
