@@ -27,6 +27,7 @@ impl<'a> Iterator for Lexer<'a> {
 #[derive(Debug, Copy, Clone, PartialEq, Logos, FromPrimitive, ToPrimitive)]
 pub(crate) enum SyntaxKind {
   Root,
+  BinaryOp,
 
   #[token("func")]
   FuncKw,
