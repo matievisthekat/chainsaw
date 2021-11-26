@@ -4,6 +4,7 @@ use num_traits::{FromPrimitive, ToPrimitive};
 
 pub type SyntaxNode = rowan::SyntaxNode<MonkeLanguage>;
 pub type SyntaxToken = rowan::SyntaxToken<MonkeLanguage>;
+pub type SyntaxElement = rowan::SyntaxElement<MonkeLanguage>;
 
 #[derive(Debug, Copy, Clone, PartialEq, FromPrimitive, ToPrimitive)]
 pub enum SyntaxKind {
