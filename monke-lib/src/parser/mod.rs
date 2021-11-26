@@ -1,7 +1,9 @@
+mod expr;
+
 use crate::lexer::{Lexer, SyntaxKind};
 use crate::syntax::{MonkeLanguage, SyntaxNode};
-use logos::Logos;
-use rowan::{GreenNode, GreenNodeBuilder, Language};
+use expr::expr;
+use rowan::{Checkpoint, GreenNode, GreenNodeBuilder, Language};
 use std::iter::Peekable;
 
 pub struct Parser<'a> {
@@ -20,10 +22,8 @@ impl<'a> Parser<'a> {
   pub fn parse(mut self) -> Parse {
     self.start_node(SyntaxKind::Root);
 
-    match self.peek() {
-      Some(SyntaxKind::Number) | Some(SyntaxKind::Identifier) => self.bump(),
-      _ => {}
-    }
+    expr(&mut self);
+
     self.finish_node();
 
     Parse {
@@ -35,8 +35,18 @@ impl<'a> Parser<'a> {
     self.builder.start_node(MonkeLanguage::kind_to_raw(kind));
   }
 
+  fn start_node_at(&mut self, checkpoint: Checkpoint, kind: SyntaxKind) {
+    self
+      .builder
+      .start_node_at(checkpoint, MonkeLanguage::kind_to_raw(kind));
+  }
+
   fn finish_node(&mut self) {
     self.builder.finish_node();
+  }
+
+  fn checkpoint(&self) -> Checkpoint {
+    self.builder.checkpoint()
   }
 
   fn peek(&mut self) -> Option<SyntaxKind> {
@@ -67,37 +77,18 @@ impl Parse {
 }
 
 #[cfg(test)]
+fn check(input: &str, expected_tree: expect_test::Expect) {
+  let parse = Parser::new(input).parse();
+  expected_tree.assert_eq(&parse.debug_tree());
+}
+
+#[cfg(test)]
 mod tests {
   use super::*;
-  use expect_test::{expect, Expect};
-
-  fn check(input: &str, expected_tree: Expect) {
-    let parse = Parser::new(input).parse();
-    expected_tree.assert_eq(&parse.debug_tree());
-  }
+  use expect_test::expect;
 
   #[test]
   fn parse_nothing() {
     check("", expect![[r#"Root@0..0"#]]);
-  }
-
-  #[test]
-  fn parse_number() {
-    check(
-      "123",
-      expect![[r#"
-Root@0..3
-  Number@0..3 "123""#]],
-    );
-  }
-
-  #[test]
-  fn parse_binding_usage() {
-    check(
-      "counter",
-      expect![[r#"
-Root@0..7
-  Identifier@0..7 "counter""#]],
-    );
   }
 }
