@@ -9,3 +9,4 @@ edition = "2021"
 smol_str = "0.1.17"
 syntax = {path = "../syntax"}
 ast = {path = "../ast"}
+arena = {path = "../arena"}
