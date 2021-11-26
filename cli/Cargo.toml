@@ -1,5 +1,5 @@
 [package]
-name = "monke-lib"
+name = "monke"
 version = "0.0.0-alpha"
 edition = "2021"
 
@@ -7,6 +7,3 @@ edition = "2021"
 
 [dependencies]
 parser = {path = "../parser"}
-
-[dev-dependencies]
-expect-test = "1.0.1"

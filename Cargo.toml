@@ -1,2 +1,2 @@
 [workspace]
-members = ["monke-cli", "lexer", "syntax", "parser"]
+members = ["cli", "lexer", "syntax", "parser"]
