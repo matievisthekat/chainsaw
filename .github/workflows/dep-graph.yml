@@ -18,7 +18,7 @@ jobs:
         run: cargo install cargo-depgraph
       - name: Generate dep graph
         run: cargo depgraph --all-deps | dot -Tpng > dependency_graph.png
-      - uses: EndBug/add-and-commit@vlatest
+      - uses: EndBug/add-and-commit@latest
         with:
           default_author: github_actions
           committer_name: GitHub Actions
