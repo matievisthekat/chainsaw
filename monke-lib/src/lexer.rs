@@ -2,6 +2,8 @@ use logos::Logos;
 
 #[derive(Debug, Copy, Clone, PartialEq, Logos)]
 pub(crate) enum SyntaxKind {
+  Root,
+
   #[token("func")]
   FuncKw,
 
