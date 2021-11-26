@@ -1,3 +1,5 @@
+pub mod validation;
+
 use syntax::{SyntaxElement, SyntaxKind, SyntaxNode, SyntaxToken};
 
 #[derive(Debug)]
@@ -109,7 +111,7 @@ impl BinaryExpr {
 pub struct Literal(SyntaxNode);
 impl Literal {
   pub fn parse(&self) -> u64 {
-    self.0.first_token().unwrap().text().parse().unwrap()
+    self.0.first_token().unwrap().text().parse().ok()
   }
 }
 
