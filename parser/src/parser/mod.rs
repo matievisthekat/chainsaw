@@ -1,9 +1,14 @@
 pub(crate) mod marker;
 
+mod parse_error;
+pub(crate) use parse_error::ParseError;
+
 use crate::event::Event;
 use crate::grammar;
 use crate::source::Source;
+use lexer::Token;
 use marker::Marker;
+use std::mem;
 use syntax::SyntaxKind;
 
 const RECOVERY_SET: [SyntaxKind; 1] = [SyntaxKind::SetKw];
@@ -36,7 +41,7 @@ impl<'t, 'input> Parser<'t, 'input> {
 
   pub(crate) fn bump(&mut self) {
     self.expected_kinds.clear();
-    self.source.next_token().unwrap();
+    self.source.peek_token().unwrap();
     self.events.push(Event::AddToken);
   }
   pub(crate) fn expect(&mut self, kind: SyntaxKind) {
@@ -48,6 +53,21 @@ impl<'t, 'input> Parser<'t, 'input> {
   }
 
   pub(crate) fn error(&mut self) {
+    let current_token = self.source.peek_token();
+
+    let (found, range) = current_token.map_or_else(
+      // If we’re at the end of the input we use the range of the very last token in the
+      // input.
+      || (None, self.source.last_token_range().unwrap()),
+      |Token { kind, range, .. }| (Some((*kind).into()), *range),
+    );
+
+    self.events.push(Event::Error(ParseError {
+      expected: mem::take(&mut self.expected_kinds),
+      found,
+      range,
+    }));
+
     if !self.at_set(&RECOVERY_SET) && !self.at_end() {
       let m = self.start();
       self.bump();
