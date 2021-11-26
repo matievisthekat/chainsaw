@@ -1,16 +1,19 @@
 use super::*;
 
-pub(super) fn expr(p: &mut Parser) {
-  expr_binding_power(p, 0);
+pub(super) fn expr(p: &mut Parser) -> Option<CompletedMarker> {
+  expr_binding_power(p, 0)
 }
 
-pub(crate) fn expr_binding_power(p: &mut Parser, minimum_binding_power: u8) {
+pub(crate) fn expr_binding_power(
+  p: &mut Parser,
+  minimum_binding_power: u8,
+) -> Option<CompletedMarker> {
   let mut lhs = match p.peek() {
     Some(SyntaxKind::Number) => literal(p),
     Some(SyntaxKind::Identifier) => variable_ref(p),
     Some(SyntaxKind::Minus) => prefix_expr(p),
     Some(SyntaxKind::LParen) => paren_expr(p),
-    _ => return, // we’ll handle errors later.
+    _ => return None, // we’ll handle errors later.
   };
   loop {
     let op = match p.peek() {
@@ -18,13 +21,13 @@ pub(crate) fn expr_binding_power(p: &mut Parser, minimum_binding_power: u8) {
       Some(SyntaxKind::Minus) => BinaryOp::Sub,
       Some(SyntaxKind::Asterisk) => BinaryOp::Mul,
       Some(SyntaxKind::Slash) => BinaryOp::Div,
-      _ => return, // we’ll handle errors later.
+      _ => return None, // we’ll handle errors later.
     };
 
     let (left_binding_power, right_binding_power) = op.binding_power();
 
     if left_binding_power < minimum_binding_power {
-      return;
+      break;
     }
 
     // Eat the operator’s token.
@@ -34,6 +37,7 @@ pub(crate) fn expr_binding_power(p: &mut Parser, minimum_binding_power: u8) {
     expr_binding_power(p, right_binding_power);
     lhs = m.complete(p, SyntaxKind::InfixExpr);
   }
+  Some(lhs)
 }
 
 fn literal(p: &mut Parser) -> CompletedMarker {
