@@ -1,5 +1,11 @@
 use logos::Logos;
 
+impl From<SyntaxKind> for rowan::SyntaxKind {
+  fn from(kind: SyntaxKind) -> Self {
+    Self(kind as u16)
+  }
+}
+
 #[derive(Debug, Copy, Clone, PartialEq, Logos)]
 pub(crate) enum SyntaxKind {
   Root,
