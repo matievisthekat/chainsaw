@@ -81,7 +81,7 @@ pub(crate) enum SyntaxKind {
   #[token(")")]
   RParen,
 
-  #[regex(" +")]
+  #[regex("[ \n]+")]
   Whitespace,
 
   #[regex("#.*")]
@@ -103,6 +103,11 @@ mod tests {
   #[test]
   fn lex_spaces() {
     check("   ", SyntaxKind::Whitespace);
+  }
+
+  #[test]
+  fn lex_spaces_and_newlines() {
+    check("  \n ", SyntaxKind::Whitespace);
   }
 
   #[test]
