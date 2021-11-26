@@ -78,6 +78,9 @@ pub(crate) enum SyntaxKind {
   #[regex(" +")]
   Whitespace,
 
+  #[regex("#.*")]
+  Comment,
+
   #[error]
   Error,
 }
@@ -179,5 +182,10 @@ mod tests {
   #[test]
   fn lex_rbrace() {
     check("}", SyntaxKind::RBrace);
+  }
+
+  #[test]
+  fn lex_comment() {
+    check("# foo", SyntaxKind::Comment);
   }
 }
