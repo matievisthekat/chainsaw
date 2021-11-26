@@ -13,7 +13,10 @@ pub(crate) fn expr_binding_power(
     Some(SyntaxKind::Identifier) => variable_ref(p),
     Some(SyntaxKind::Minus) => prefix_expr(p),
     Some(SyntaxKind::LParen) => paren_expr(p),
-    _ => return None, // we’ll handle errors later.
+    _ => {
+      p.error();
+      return None;
+    }
   };
   loop {
     let op = match p.peek() {
@@ -21,7 +24,7 @@ pub(crate) fn expr_binding_power(
       Some(SyntaxKind::Minus) => BinaryOp::Sub,
       Some(SyntaxKind::Asterisk) => BinaryOp::Mul,
       Some(SyntaxKind::Slash) => BinaryOp::Div,
-      _ => return None, // we’ll handle errors later.
+      _ => break,
     };
 
     let (left_binding_power, right_binding_power) = op.binding_power();
