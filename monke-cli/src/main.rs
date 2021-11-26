@@ -14,6 +14,7 @@ fn main() -> io::Result<()> {
         stdin.read_line(&mut input)?;
 
         let parse = Parser::new(&input).parse();
+        println!("{}", parse.debug_tree());
 
         input.clear();
     }
