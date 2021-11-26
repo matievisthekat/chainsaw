@@ -1,22 +1,22 @@
-use crate::lexer::{Lexeme, SyntaxKind};
+use crate::lexer::{SyntaxKind, Token};
 
-pub(super) struct Source<'l, 'input> {
-  lexemes: &'l [Lexeme<'input>],
+pub(super) struct Source<'t, 'input> {
+  lexemes: &'t [Token<'input>],
   cursor: usize,
 }
 
-impl<'l, 'input> Source<'l, 'input> {
-  pub(super) fn new(lexemes: &'l [Lexeme<'input>]) -> Self {
+impl<'t, 'input> Source<'t, 'input> {
+  pub(super) fn new(lexemes: &'t [Token<'input>]) -> Self {
     Self { lexemes, cursor: 0 }
   }
 
-  pub(super) fn next_lexeme(&mut self) -> Option<&'l Lexeme<'input>> {
+  pub(super) fn next_lexeme(&mut self) -> Option<&'t Token<'input>> {
     self.eat_trivia();
 
-    let lexeme = self.lexemes.get(self.cursor)?;
+    let token = self.lexemes.get(self.cursor)?;
     self.cursor += 1;
 
-    Some(lexeme)
+    Some(token)
   }
 
   pub(super) fn peek_kind(&mut self) -> Option<SyntaxKind> {
@@ -38,6 +38,6 @@ impl<'l, 'input> Source<'l, 'input> {
     self
       .lexemes
       .get(self.cursor)
-      .map(|Lexeme { kind, .. }| *kind)
+      .map(|Token { kind, .. }| *kind)
   }
 }

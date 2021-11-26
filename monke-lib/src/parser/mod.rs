@@ -4,7 +4,7 @@ mod marker;
 mod sink;
 mod source;
 
-use crate::lexer::{Lexeme, Lexer, SyntaxKind};
+use crate::lexer::{Lexer, SyntaxKind, Token};
 use crate::syntax::SyntaxNode;
 use event::Event;
 use expr::expr;
@@ -24,13 +24,13 @@ pub fn parse(input: &str) -> Parse {
   }
 }
 
-struct Parser<'l, 'input> {
-  source: Source<'l, 'input>,
+struct Parser<'t, 'input> {
+  source: Source<'t, 'input>,
   events: Vec<Event>,
 }
 
-impl<'l, 'input> Parser<'l, 'input> {
-  fn new(lexemes: &'l [Lexeme<'input>]) -> Self {
+impl<'t, 'input> Parser<'t, 'input> {
+  fn new(lexemes: &'t [Token<'input>]) -> Self {
     Self {
       source: Source::new(lexemes),
       events: Vec::new(),
@@ -56,12 +56,16 @@ impl<'l, 'input> Parser<'l, 'input> {
   }
 
   fn bump(&mut self) {
-    let Lexeme { kind, text } = self.source.next_lexeme().unwrap();
+    let Token { kind, text } = self.source.next_lexeme().unwrap();
 
     self.events.push(Event::AddToken {
       kind: *kind,
       text: (*text).into(),
     });
+  }
+
+  fn at(&mut self, kind: SyntaxKind) -> bool {
+    self.peek() == Some(kind)
   }
 }
 

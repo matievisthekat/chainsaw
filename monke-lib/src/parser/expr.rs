@@ -1,5 +1,6 @@
 use super::Parser;
 use crate::lexer::SyntaxKind;
+use crate::parser::marker::CompletedMarker;
 
 pub(super) fn expr(p: &mut Parser) {
   expr_binding_power(p, 0);
@@ -7,40 +8,10 @@ pub(super) fn expr(p: &mut Parser) {
 
 pub(super) fn expr_binding_power(p: &mut Parser, minimum_binding_power: u8) {
   let mut lhs = match p.peek() {
-    Some(SyntaxKind::Number) => {
-      let m = p.start();
-      p.bump();
-      m.complete(p, SyntaxKind::Literal)
-    }
-    Some(SyntaxKind::Identifier) => {
-      let m = p.start();
-      p.bump();
-      m.complete(p, SyntaxKind::VariableRef)
-    }
-    Some(SyntaxKind::Minus) => {
-      let m = p.start();
-
-      let op = PrefixOp::Neg;
-      let ((), right_binding_power) = op.binding_power();
-
-      // Eat the operator’s token.
-      p.bump();
-
-      expr_binding_power(p, right_binding_power);
-
-      m.complete(p, SyntaxKind::PrefixExpr)
-    }
-    Some(SyntaxKind::LParen) => {
-      let m = p.start();
-
-      p.bump();
-      expr_binding_power(p, 0);
-
-      assert_eq!(p.peek(), Some(SyntaxKind::RParen));
-      p.bump();
-
-      m.complete(p, SyntaxKind::ParenExpr)
-    }
+    Some(SyntaxKind::Number) => literal(p),
+    Some(SyntaxKind::Identifier) => variable_ref(p),
+    Some(SyntaxKind::Minus) => prefix_expr(p),
+    Some(SyntaxKind::LParen) => paren_expr(p),
     _ => return, // we’ll handle errors later.
   };
   loop {
@@ -65,6 +36,52 @@ pub(super) fn expr_binding_power(p: &mut Parser, minimum_binding_power: u8) {
     expr_binding_power(p, right_binding_power);
     lhs = m.complete(p, SyntaxKind::BinaryExpr);
   }
+}
+
+fn literal(p: &mut Parser) -> CompletedMarker {
+  assert!(p.at(SyntaxKind::Number));
+
+  let m = p.start();
+  p.bump();
+  m.complete(p, SyntaxKind::Literal)
+}
+
+fn variable_ref(p: &mut Parser) -> CompletedMarker {
+  assert!(p.at(SyntaxKind::Identifier));
+
+  let m = p.start();
+  p.bump();
+  m.complete(p, SyntaxKind::VariableRef)
+}
+
+fn prefix_expr(p: &mut Parser) -> CompletedMarker {
+  assert!(p.at(SyntaxKind::Minus));
+
+  let m = p.start();
+
+  let op = PrefixOp::Neg;
+  let ((), right_binding_power) = op.binding_power();
+
+  // Eat the operator’s token.
+  p.bump();
+
+  expr_binding_power(p, right_binding_power);
+
+  m.complete(p, SyntaxKind::PrefixExpr)
+}
+
+fn paren_expr(p: &mut Parser) -> CompletedMarker {
+  assert!(p.at(SyntaxKind::LParen));
+
+  let m = p.start();
+
+  p.bump();
+  expr_binding_power(p, 0);
+
+  assert!(p.at(SyntaxKind::RParen));
+  p.bump();
+
+  m.complete(p, SyntaxKind::ParenExpr)
 }
 
 enum InfixOp {
