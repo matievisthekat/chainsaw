@@ -10,3 +10,6 @@ smol_str = "0.1.17"
 la-arena = "0.2.0"
 syntax = {path = "../syntax"}
 ast = {path = "../ast"}
+
+[dev-dependencies]
+parser = {path = "../parser"}
