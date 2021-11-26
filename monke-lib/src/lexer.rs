@@ -41,6 +41,9 @@ pub(crate) enum SyntaxKind {
   Root,
   BinaryExpr,
   PrefixExpr,
+  ParenExpr,
+  Literal,
+  VariableRef,
 
   #[token("func")]
   FuncKw,
