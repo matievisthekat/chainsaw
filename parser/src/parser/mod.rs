@@ -11,6 +11,7 @@ const RECOVERY_SET: [SyntaxKind; 1] = [SyntaxKind::SetKw];
 pub(crate) struct Parser<'t, 'input> {
   source: Source<'t, 'input>,
   events: Vec<Event>,
+  expected_kinds: Vec<SyntaxKind>,
 }
 
 impl<'t, 'input> Parser<'t, 'input> {
@@ -18,6 +19,7 @@ impl<'t, 'input> Parser<'t, 'input> {
     Self {
       source,
       events: Vec::new(),
+      expected_kinds: Vec::new(),
     }
   }
 
@@ -32,6 +34,11 @@ impl<'t, 'input> Parser<'t, 'input> {
     Marker::new(pos)
   }
 
+  pub(crate) fn bump(&mut self) {
+    self.expected_kinds.clear();
+    self.source.next_token().unwrap();
+    self.events.push(Event::AddToken);
+  }
   pub(crate) fn expect(&mut self, kind: SyntaxKind) {
     if self.at(kind) {
       self.bump();
@@ -48,6 +55,11 @@ impl<'t, 'input> Parser<'t, 'input> {
     }
   }
 
+  pub(crate) fn at(&mut self, kind: SyntaxKind) -> bool {
+    self.expected_kinds.push(kind);
+    self.peek() == Some(kind)
+  }
+
   fn at_set(&mut self, set: &[SyntaxKind]) -> bool {
     self.peek().map_or(false, |k| set.contains(&k))
   }
@@ -56,17 +68,8 @@ impl<'t, 'input> Parser<'t, 'input> {
     self.peek().is_none()
   }
 
-  pub(crate) fn peek(&mut self) -> Option<SyntaxKind> {
+  fn peek(&mut self) -> Option<SyntaxKind> {
     self.source.peek_kind()
-  }
-
-  pub(crate) fn bump(&mut self) {
-    self.source.next_token().unwrap();
-    self.events.push(Event::AddToken);
-  }
-
-  pub(crate) fn at(&mut self, kind: SyntaxKind) -> bool {
-    self.peek() == Some(kind)
   }
 }
 

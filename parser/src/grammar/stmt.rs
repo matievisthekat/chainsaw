@@ -1,9 +1,10 @@
 use super::*;
 
 pub(super) fn stmt(p: &mut Parser) -> Option<CompletedMarker> {
-  match p.peek() {
-    Some(SyntaxKind::SetKw) => Some(variable_def(p)),
-    _ => expr::expr(p),
+  if p.at(SyntaxKind::SetKw) {
+    Some(variable_def(p))
+  } else {
+    expr::expr(p)
   }
 }
 

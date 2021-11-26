@@ -8,23 +8,32 @@ pub(crate) fn expr_binding_power(
   p: &mut Parser,
   minimum_binding_power: u8,
 ) -> Option<CompletedMarker> {
-  let mut lhs = match p.peek() {
-    Some(SyntaxKind::Number) => literal(p),
-    Some(SyntaxKind::Identifier) => variable_ref(p),
-    Some(SyntaxKind::Minus) => prefix_expr(p),
-    Some(SyntaxKind::LParen) => paren_expr(p),
-    _ => {
-      p.error();
-      return None;
-    }
+  let mut lhs = if p.at(SyntaxKind::Number) {
+    literal(p)
+  } else if p.at(SyntaxKind::Identifier) {
+    variable_ref(p)
+  } else if p.at(SyntaxKind::Minus) {
+    prefix_expr(p)
+  } else if p.at(SyntaxKind::LParen) {
+    paren_expr(p)
+  } else {
+    p.error();
+    return None;
   };
+
   loop {
-    let op = match p.peek() {
-      Some(SyntaxKind::Plus) => BinaryOp::Add,
-      Some(SyntaxKind::Minus) => BinaryOp::Sub,
-      Some(SyntaxKind::Asterisk) => BinaryOp::Mul,
-      Some(SyntaxKind::Slash) => BinaryOp::Div,
-      _ => break,
+    let op = if p.at(SyntaxKind::Plus) {
+      BinaryOp::Add
+    } else if p.at(SyntaxKind::Minus) {
+      BinaryOp::Sub
+    } else if p.at(SyntaxKind::Asterisk) {
+      BinaryOp::Mul
+    } else if p.at(SyntaxKind::Slash) {
+      BinaryOp::Div
+    } else {
+      // We’re not at an operator; we don’t know what to do next, so we return and let the
+      // caller decide.
+      break;
     };
 
     let (left_binding_power, right_binding_power) = op.binding_power();
