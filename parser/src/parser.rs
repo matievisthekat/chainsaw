@@ -3,7 +3,6 @@ pub(crate) mod marker;
 use crate::event::Event;
 use crate::expr::expr;
 use crate::source::Source;
-use lexer::Token;
 use marker::Marker;
 use syntax::SyntaxKind;
 
@@ -13,9 +12,9 @@ pub(crate) struct Parser<'t, 'input> {
 }
 
 impl<'t, 'input> Parser<'t, 'input> {
-  pub(crate) fn new(tokens: &'t [Token<'input>]) -> Self {
+  pub(crate) fn new(source: Source<'t, 'input>) -> Self {
     Self {
-      source: Source::new(tokens),
+      source,
       events: Vec::new(),
     }
   }

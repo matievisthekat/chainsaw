@@ -8,11 +8,13 @@ use lexer::Lexer;
 use parser::Parser;
 use rowan::GreenNode;
 use sink::Sink;
+use source::Source;
 use syntax::SyntaxNode;
 
 pub fn parse(input: &str) -> Parse {
   let tokens: Vec<_> = Lexer::new(input).collect();
-  let parser = Parser::new(&tokens);
+  let source = Source::new(&tokens);
+  let parser = Parser::new(source);
   let events = parser.parse();
   let sink = Sink::new(&tokens, events);
 
