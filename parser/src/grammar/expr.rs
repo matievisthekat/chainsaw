@@ -46,8 +46,12 @@ pub(crate) fn expr_binding_power(
     p.bump();
 
     let m = lhs.precede(p);
-    expr_binding_power(p, right_binding_power);
+    let parsed_rhs = expr_binding_power(p, right_binding_power).is_some();
     lhs = m.complete(p, SyntaxKind::InfixExpr);
+
+    if !parsed_rhs {
+      break;
+    }
   }
   Some(lhs)
 }
@@ -394,6 +398,23 @@ Root@0..7
               VariableRef@1..4
                 Identifier@1..4 "foo"
           error at 1..4: expected '+', '-', '*', '/' or ')'"#]],
+    );
+  }
+
+  #[test]
+  fn do_not_parse_operator_if_gettting_rhs_failed() {
+    check(
+      "(1+",
+      expect![[r#"
+Root@0..3
+  ParenExpr@0..3
+    LParen@0..1 "("
+    InfixExpr@1..3
+      Literal@1..2
+        Number@1..2 "1"
+      Plus@2..3 "+"
+error at 2..3: expected number, identifier, '-' or '('
+error at 2..3: expected ')'"#]],
     );
   }
 }
