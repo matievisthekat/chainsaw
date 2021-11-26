@@ -1,6 +1,8 @@
 use crate::lexer::SyntaxKind;
 use num_traits::{FromPrimitive, ToPrimitive};
 
+pub(crate) type SyntaxNode = rowan::SyntaxNode<MonkeLanguage>;
+
 #[derive(Debug, Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash)]
 pub(crate) enum MonkeLanguage {}
 
