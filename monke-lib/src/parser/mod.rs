@@ -85,7 +85,7 @@ impl<'l, 'input> Parser<'l, 'input> {
 
   fn eat_whitespace(&mut self) {
     while self.peek_raw() == Some(SyntaxKind::Whitespace) {
-      self.bump();
+      self.cursor += 1;
     }
   }
 }
