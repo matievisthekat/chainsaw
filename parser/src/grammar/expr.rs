@@ -31,7 +31,7 @@ pub(crate) fn expr_binding_power(
     } else if p.at(SyntaxKind::Slash) {
       BinaryOp::Div
     } else {
-      // We’re not at an operator; we don’t know what to do next, so we return and let the
+      // We're not at an operator; we don't know what to do next, so we return and let the
       // caller decide.
       break;
     };
@@ -42,7 +42,7 @@ pub(crate) fn expr_binding_power(
       break;
     }
 
-    // Eat the operator’s token.
+    // Eat the operator's token.
     p.bump();
 
     let m = lhs.precede(p);
@@ -76,7 +76,7 @@ fn prefix_expr(p: &mut Parser) -> CompletedMarker {
   let op = UnaryOp::Neg;
   let ((), right_binding_power) = op.binding_power();
 
-  // Eat the operator’s token.
+  // Eat the operator's token.
   p.bump();
 
   expr_binding_power(p, right_binding_power);
@@ -388,11 +388,12 @@ Root@0..7
     check(
       "(foo",
       expect![[r#"
-Root@0..4
-  ParenExpr@0..4
-    LParen@0..1 "("
-    VariableRef@1..4
-      Identifier@1..4 "foo""#]],
+          Root@0..4
+            ParenExpr@0..4
+              LParen@0..1 "("
+              VariableRef@1..4
+                Identifier@1..4 "foo"
+          error at 1..4: expected '+', '-', '*', '/' or ')'"#]],
     );
   }
 }

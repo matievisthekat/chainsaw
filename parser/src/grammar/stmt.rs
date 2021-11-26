@@ -49,23 +49,24 @@ Root@0..13
     check(
       "set a =\nset b = a",
       expect![[r#"
-Root@0..17
-  VariableDef@0..8
-    SetKw@0..3 "set"
-    Whitespace@3..4 " "
-    Identifier@4..5 "a"
-    Whitespace@5..6 " "
-    Equals@6..7 "="
-    Whitespace@7..8 "\n"
-  VariableDef@8..17
-    SetKw@8..11 "set"
-    Whitespace@11..12 " "
-    Identifier@12..13 "b"
-    Whitespace@13..14 " "
-    Equals@14..15 "="
-    Whitespace@15..16 " "
-    VariableRef@16..17
-      Identifier@16..17 "a""#]],
+          Root@0..17
+            VariableDef@0..8
+              SetKw@0..3 "set"
+              Whitespace@3..4 " "
+              Identifier@4..5 "a"
+              Whitespace@5..6 " "
+              Equals@6..7 "="
+              Whitespace@7..8 "\n"
+            VariableDef@8..17
+              SetKw@8..11 "set"
+              Whitespace@11..12 " "
+              Identifier@12..13 "b"
+              Whitespace@13..14 " "
+              Equals@14..15 "="
+              Whitespace@15..16 " "
+              VariableRef@16..17
+                Identifier@16..17 "a"
+          error at 8..11: expected number, identifier, '-' or '(', but found 'set'"#]],
     );
   }
 }
