@@ -30,6 +30,12 @@ pub(crate) struct Lexeme<'a> {
   pub(crate) text: &'a str,
 }
 
+impl SyntaxKind {
+  pub(crate) fn is_trivia(self) -> bool {
+    matches!(self, Self::Whitespace | Self::Comment)
+  }
+}
+
 #[derive(Debug, Copy, Clone, PartialEq, Logos, FromPrimitive, ToPrimitive)]
 pub(crate) enum SyntaxKind {
   Root,
