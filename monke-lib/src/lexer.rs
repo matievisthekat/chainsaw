@@ -63,6 +63,12 @@ pub(crate) enum SyntaxKind {
   #[token("}")]
   RBrace,
 
+  #[token("(")]
+  LParen,
+
+  #[token(")")]
+  RParen,
+
   #[regex(" +")]
   Whitespace,
 
@@ -152,6 +158,16 @@ mod tests {
   #[test]
   fn lex_lbrace() {
     check("{", SyntaxKind::LBrace);
+  }
+
+  #[test]
+  fn lex_lparen() {
+    check("(", SyntaxKind::LParen);
+  }
+
+  #[test]
+  fn lex_rparen() {
+    check(")", SyntaxKind::RParen);
   }
 
   #[test]

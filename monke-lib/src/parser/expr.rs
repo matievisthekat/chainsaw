@@ -19,6 +19,13 @@ pub(super) fn expr_binding_power(p: &mut Parser, minimum_binding_power: u8) {
       expr_binding_power(p, right_binding_power);
       p.finish_node();
     }
+    Some(SyntaxKind::LParen) => {
+      p.bump();
+      expr_binding_power(p, 0);
+
+      assert_eq!(p.peek(), Some(SyntaxKind::RParen));
+      p.bump();
+    }
     _ => {}
   }
   loop {
@@ -115,7 +122,7 @@ Root@0..6
   }
 
   #[test]
-  fn parse_binding_usage() {
+  fn parse_variable_ref() {
     check(
       "counter",
       expect![[r#"
@@ -172,6 +179,46 @@ Root@0..7
         Number@4..5 "3"
     Minus@5..6 "-"
     Number@6..7 "4""#]],
+    );
+  }
+
+  #[test]
+  fn parse_nested_parentheses() {
+    check(
+      "((((((10))))))",
+      expect![[r#"
+Root@0..14
+  LParen@0..1 "("
+  LParen@1..2 "("
+  LParen@2..3 "("
+  LParen@3..4 "("
+  LParen@4..5 "("
+  LParen@5..6 "("
+  Number@6..8 "10"
+  RParen@8..9 ")"
+  RParen@9..10 ")"
+  RParen@10..11 ")"
+  RParen@11..12 ")"
+  RParen@12..13 ")"
+  RParen@13..14 ")""#]],
+    );
+  }
+
+  #[test]
+  fn parentheses_affect_precedence() {
+    check(
+      "5*(2+1)",
+      expect![[r#"
+Root@0..7
+  BinaryExpr@0..7
+    Number@0..1 "5"
+    Asterisk@1..2 "*"
+    LParen@2..3 "("
+    BinaryExpr@3..6
+      Number@3..4 "2"
+      Plus@4..5 "+"
+      Number@5..6 "1"
+    RParen@6..7 ")""#]],
     );
   }
 }
