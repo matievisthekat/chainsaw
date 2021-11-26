@@ -1,5 +1,6 @@
 use super::event::Event;
 use crate::parser::ParseError;
+use crate::Parse;
 use lexer::Token;
 use rowan::{GreenNode, GreenNodeBuilder, Language};
 use std::mem;
@@ -24,7 +25,7 @@ impl<'t, 'input> Sink<'t, 'input> {
     }
   }
 
-  pub(crate) fn finish(mut self) -> GreenNode {
+  pub(crate) fn finish(mut self) -> Parse {
     for idx in 0..self.events.len() {
       match mem::replace(&mut self.events[idx], Event::Placeholder) {
         Event::StartNode {
@@ -64,7 +65,10 @@ impl<'t, 'input> Sink<'t, 'input> {
       self.eat_trivia();
     }
 
-    self.builder.finish()
+    Parse {
+      green_node: self.builder.finish(),
+      errors: self.errors,
+    }
   }
 
   fn token(&mut self) {
