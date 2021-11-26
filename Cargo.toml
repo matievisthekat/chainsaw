@@ -1,2 +1,2 @@
 [workspace]
-members = ["monke-lib", "monke-cli"]
+members = ["monke_lib", "monke_cli"]
