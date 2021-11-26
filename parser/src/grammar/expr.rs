@@ -1,8 +1,6 @@
-use crate::parser::marker::CompletedMarker;
-use crate::parser::Parser;
-use syntax::SyntaxKind;
+use super::*;
 
-pub(crate) fn expr(p: &mut Parser) {
+pub(super) fn expr(p: &mut Parser) {
   expr_binding_power(p, 0);
 }
 
@@ -114,7 +112,7 @@ impl UnaryOp {
 
 #[cfg(test)]
 mod tests {
-  use super::super::check;
+  use crate::check;
   use expect_test::expect;
   #[test]
   fn parse_number() {

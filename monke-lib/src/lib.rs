@@ -1,1 +1,3 @@
-pub use parser;
+pub mod parser {
+  pub use parser::parse;
+}

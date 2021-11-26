@@ -1,7 +1,7 @@
 pub(crate) mod marker;
 
 use crate::event::Event;
-use crate::expr::expr;
+use crate::grammar;
 use crate::source::Source;
 use marker::Marker;
 use syntax::SyntaxKind;
@@ -20,10 +20,7 @@ impl<'t, 'input> Parser<'t, 'input> {
   }
 
   pub(crate) fn parse(mut self) -> Vec<Event> {
-    let m = self.start();
-    expr(&mut self);
-    m.complete(&mut self, SyntaxKind::Root);
-
+    grammar::root(&mut self);
     self.events
   }
 

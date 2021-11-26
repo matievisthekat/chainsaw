@@ -1,8 +1,8 @@
 mod event;
-mod expr;
 mod parser;
 mod sink;
 mod source;
+mod grammar;
 
 use lexer::Lexer;
 use parser::Parser;
