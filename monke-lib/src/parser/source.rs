@@ -10,7 +10,7 @@ impl<'t, 'input> Source<'t, 'input> {
     Self { tokens, cursor: 0 }
   }
 
-  pub(super) fn next_lexeme(&mut self) -> Option<&'t Token<'input>> {
+  pub(super) fn next_token(&mut self) -> Option<&'t Token<'input>> {
     self.eat_trivia();
 
     let token = self.tokens.get(self.cursor)?;

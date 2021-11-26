@@ -1,7 +1,7 @@
 use super::event::Event;
 use crate::lexer::Token;
 use crate::syntax::MonkeLanguage;
-use rowan::{GreenNode, GreenNodeBuilder, Language, SmolStr};
+use rowan::{GreenNode, GreenNodeBuilder, Language};
 use std::mem;
 
 pub(super) struct Sink<'t, 'input> {

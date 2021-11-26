@@ -56,8 +56,7 @@ impl<'t, 'input> Parser<'t, 'input> {
   }
 
   fn bump(&mut self) {
-    let Token { kind, text } = self.source.next_lexeme().unwrap();
-
+    self.source.next_token().unwrap();
     self.events.push(Event::AddToken);
   }
 

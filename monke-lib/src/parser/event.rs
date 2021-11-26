@@ -1,5 +1,4 @@
 use crate::lexer::SyntaxKind;
-use rowan::SmolStr;
 
 #[derive(Debug, Clone, PartialEq)]
 pub(super) enum Event {
