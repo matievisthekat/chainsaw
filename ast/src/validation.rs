@@ -8,6 +8,17 @@ pub struct ValidationError {
   kind: ValidationErrorKind,
   range: TextRange,
 }
+impl fmt::Display for ValidationError {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    write!(
+      f,
+      "error at {}..{}: {}",
+      u32::from(self.range.start()),
+      u32::from(self.range.end()),
+      self.kind,
+    )
+  }
+}
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 enum ValidationErrorKind {
