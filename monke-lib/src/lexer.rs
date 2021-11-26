@@ -39,7 +39,7 @@ impl SyntaxKind {
 #[derive(Debug, Copy, Clone, PartialEq, Logos, FromPrimitive, ToPrimitive)]
 pub(crate) enum SyntaxKind {
   Root,
-  BinaryExpr,
+  InfixExpr,
   PrefixExpr,
   ParenExpr,
   Literal,
