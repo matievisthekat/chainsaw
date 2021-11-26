@@ -9,14 +9,24 @@ pub(super) fn expr_binding_power(p: &mut Parser, minimum_binding_power: u8) {
   let checkpoint = p.checkpoint();
   match p.peek() {
     Some(SyntaxKind::Number) | Some(SyntaxKind::Identifier) => p.bump(),
+    Some(SyntaxKind::Minus) => {
+      let op = PrefixOp::Neg;
+      let ((), right_binding_power) = op.binding_power();
+
+      p.bump();
+
+      p.start_node_at(checkpoint, SyntaxKind::PrefixExpr);
+      expr_binding_power(p, right_binding_power);
+      p.finish_node();
+    }
     _ => {}
   }
   loop {
     let op = match p.peek() {
-      Some(SyntaxKind::Plus) => Op::Add,
-      Some(SyntaxKind::Minus) => Op::Sub,
-      Some(SyntaxKind::Asterisk) => Op::Mul,
-      Some(SyntaxKind::Slash) => Op::Div,
+      Some(SyntaxKind::Plus) => InfixOp::Add,
+      Some(SyntaxKind::Minus) => InfixOp::Sub,
+      Some(SyntaxKind::Asterisk) => InfixOp::Mul,
+      Some(SyntaxKind::Slash) => InfixOp::Div,
       _ => return, // we’ll handle errors later.
     };
 
@@ -29,24 +39,36 @@ pub(super) fn expr_binding_power(p: &mut Parser, minimum_binding_power: u8) {
     // Eat the operator’s token.
     p.bump();
 
-    p.start_node_at(checkpoint, SyntaxKind::BinaryOp);
+    p.start_node_at(checkpoint, SyntaxKind::BinaryExpr);
     expr_binding_power(p, right_binding_power);
     p.finish_node();
   }
 }
 
-enum Op {
+enum InfixOp {
   Add,
   Sub,
   Mul,
   Div,
 }
 
-impl Op {
+impl InfixOp {
   fn binding_power(&self) -> (u8, u8) {
     match self {
       Self::Add | Self::Sub => (1, 2),
       Self::Mul | Self::Div => (3, 4),
+    }
+  }
+}
+
+enum PrefixOp {
+  Neg,
+}
+
+impl PrefixOp {
+  fn binding_power(&self) -> ((), u8) {
+    match self {
+      Self::Neg => ((), 5),
     }
   }
 }
@@ -66,6 +88,33 @@ Root@0..3
   }
 
   #[test]
+  fn parse_negation() {
+    check(
+      "-10",
+      expect![[r#"
+Root@0..3
+  PrefixExpr@0..3
+    Minus@0..1 "-"
+    Number@1..3 "10""#]],
+    );
+  }
+
+  #[test]
+  fn negation_has_higher_binding_power_than_infix_operators() {
+    check(
+      "-20+20",
+      expect![[r#"
+Root@0..6
+  BinaryExpr@0..6
+    PrefixExpr@0..3
+      Minus@0..1 "-"
+      Number@1..3 "20"
+    Plus@3..4 "+"
+    Number@4..6 "20""#]],
+    );
+  }
+
+  #[test]
   fn parse_binding_usage() {
     check(
       "counter",
@@ -81,7 +130,7 @@ Root@0..7
       "1+2",
       expect![[r#"
 Root@0..3
-  BinaryOp@0..3
+  BinaryExpr@0..3
     Number@0..1 "1"
     Plus@1..2 "+"
     Number@2..3 "2""#]],
@@ -94,9 +143,9 @@ Root@0..3
       "1+2+3+4",
       expect![[r#"
 Root@0..7
-  BinaryOp@0..7
-    BinaryOp@0..5
-      BinaryOp@0..3
+  BinaryExpr@0..7
+    BinaryExpr@0..5
+      BinaryExpr@0..3
         Number@0..1 "1"
         Plus@1..2 "+"
         Number@2..3 "2"
@@ -113,11 +162,11 @@ Root@0..7
       "1+2*3-4",
       expect![[r#"
 Root@0..7
-  BinaryOp@0..7
-    BinaryOp@0..5
+  BinaryExpr@0..7
+    BinaryExpr@0..5
       Number@0..1 "1"
       Plus@1..2 "+"
-      BinaryOp@2..5
+      BinaryExpr@2..5
         Number@2..3 "2"
         Asterisk@3..4 "*"
         Number@4..5 "3"
