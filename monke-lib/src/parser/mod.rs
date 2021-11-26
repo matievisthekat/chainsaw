@@ -14,10 +14,10 @@ use sink::Sink;
 use source::Source;
 
 pub fn parse(input: &str) -> Parse {
-  let lexemes: Vec<_> = Lexer::new(input).collect();
-  let parser = Parser::new(&lexemes);
+  let tokens: Vec<_> = Lexer::new(input).collect();
+  let parser = Parser::new(&tokens);
   let events = parser.parse();
-  let sink = Sink::new(&lexemes, events);
+  let sink = Sink::new(&tokens, events);
 
   Parse {
     green_node: sink.finish(),
@@ -30,9 +30,9 @@ struct Parser<'t, 'input> {
 }
 
 impl<'t, 'input> Parser<'t, 'input> {
-  fn new(lexemes: &'t [Token<'input>]) -> Self {
+  fn new(tokens: &'t [Token<'input>]) -> Self {
     Self {
-      source: Source::new(lexemes),
+      source: Source::new(tokens),
       events: Vec::new(),
     }
   }
@@ -58,10 +58,7 @@ impl<'t, 'input> Parser<'t, 'input> {
   fn bump(&mut self) {
     let Token { kind, text } = self.source.next_lexeme().unwrap();
 
-    self.events.push(Event::AddToken {
-      kind: *kind,
-      text: (*text).into(),
-    });
+    self.events.push(Event::AddToken);
   }
 
   fn at(&mut self, kind: SyntaxKind) -> bool {

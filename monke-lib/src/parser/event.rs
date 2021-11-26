@@ -7,10 +7,7 @@ pub(super) enum Event {
     kind: SyntaxKind,
     forward_parent: Option<usize>,
   },
-  AddToken {
-    kind: SyntaxKind,
-    text: SmolStr,
-  },
+  AddToken,
   FinishNode,
   Placeholder,
 }

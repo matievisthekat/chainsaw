@@ -1,21 +1,21 @@
 use super::event::Event;
-use crate::lexer::{SyntaxKind, Token};
+use crate::lexer::Token;
 use crate::syntax::MonkeLanguage;
 use rowan::{GreenNode, GreenNodeBuilder, Language, SmolStr};
 use std::mem;
 
 pub(super) struct Sink<'t, 'input> {
   builder: GreenNodeBuilder<'static>,
-  lexemes: &'t [Token<'input>],
+  tokens: &'t [Token<'input>],
   cursor: usize,
   events: Vec<Event>,
 }
 
 impl<'t, 'input> Sink<'t, 'input> {
-  pub(super) fn new(lexemes: &'t [Token<'input>], events: Vec<Event>) -> Self {
+  pub(super) fn new(tokens: &'t [Token<'input>], events: Vec<Event>) -> Self {
     Self {
       builder: GreenNodeBuilder::new(),
-      lexemes,
+      tokens,
       cursor: 0,
       events,
     }
@@ -52,7 +52,7 @@ impl<'t, 'input> Sink<'t, 'input> {
             self.builder.start_node(MonkeLanguage::kind_to_raw(kind));
           }
         }
-        Event::AddToken { kind, text } => self.token(kind, text),
+        Event::AddToken => self.token(),
         Event::FinishNode => self.builder.finish_node(),
         Event::Placeholder => {}
       }
@@ -63,18 +63,23 @@ impl<'t, 'input> Sink<'t, 'input> {
     self.builder.finish()
   }
 
-  fn token(&mut self, kind: SyntaxKind, text: SmolStr) {
-    self.builder.token(MonkeLanguage::kind_to_raw(kind), text);
+  fn token(&mut self) {
+    let Token { kind, text } = self.tokens[self.cursor];
+
+    self
+      .builder
+      .token(MonkeLanguage::kind_to_raw(kind), text.into());
+
     self.cursor += 1;
   }
 
   fn eat_trivia(&mut self) {
-    while let Some(token) = self.lexemes.get(self.cursor) {
+    while let Some(token) = self.tokens.get(self.cursor) {
       if !token.kind.is_trivia() {
         break;
       }
 
-      self.token(token.kind, token.text.into());
+      self.token();
     }
   }
 }
