@@ -4,7 +4,7 @@ mod marker;
 mod sink;
 mod source;
 
-use crate::lexer::{Lexer, SyntaxKind, Token};
+use crate::lexer::{Lexer, TokenKind, Token};
 use crate::syntax::SyntaxNode;
 use event::Event;
 use expr::expr;
@@ -40,7 +40,7 @@ impl<'t, 'input> Parser<'t, 'input> {
   fn parse(mut self) -> Vec<Event> {
     let m = self.start();
     expr(&mut self);
-    m.complete(&mut self, SyntaxKind::Root);
+    m.complete(&mut self, TokenKind::Root);
 
     self.events
   }
@@ -51,7 +51,7 @@ impl<'t, 'input> Parser<'t, 'input> {
     Marker::new(pos)
   }
 
-  fn peek(&mut self) -> Option<SyntaxKind> {
+  fn peek(&mut self) -> Option<TokenKind> {
     self.source.peek_kind()
   }
 
@@ -60,7 +60,7 @@ impl<'t, 'input> Parser<'t, 'input> {
     self.events.push(Event::AddToken);
   }
 
-  fn at(&mut self, kind: SyntaxKind) -> bool {
+  fn at(&mut self, kind: TokenKind) -> bool {
     self.peek() == Some(kind)
   }
 }

@@ -2,13 +2,13 @@ use logos::Logos;
 use num_derive::{FromPrimitive, ToPrimitive};
 
 pub(crate) struct Lexer<'a> {
-  inner: logos::Lexer<'a, SyntaxKind>,
+  inner: logos::Lexer<'a, TokenKind>,
 }
 
 impl<'a> Lexer<'a> {
   pub(crate) fn new(input: &'a str) -> Self {
     Self {
-      inner: SyntaxKind::lexer(input),
+      inner: TokenKind::lexer(input),
     }
   }
 }
@@ -26,25 +26,12 @@ impl<'a> Iterator for Lexer<'a> {
 
 #[derive(Debug, PartialEq)]
 pub(crate) struct Token<'a> {
-  pub(crate) kind: SyntaxKind,
+  pub(crate) kind: TokenKind,
   pub(crate) text: &'a str,
 }
 
-impl SyntaxKind {
-  pub(crate) fn is_trivia(self) -> bool {
-    matches!(self, Self::Whitespace | Self::Comment)
-  }
-}
-
-#[derive(Debug, Copy, Clone, PartialEq, Logos, FromPrimitive, ToPrimitive)]
-pub(crate) enum SyntaxKind {
-  Root,
-  InfixExpr,
-  PrefixExpr,
-  ParenExpr,
-  Literal,
-  VariableRef,
-
+#[derive(Debug, Copy, Clone, PartialEq, Logos)]
+pub(crate) enum TokenKind {
   #[token("func")]
   FuncKw,
 
@@ -98,108 +85,108 @@ pub(crate) enum SyntaxKind {
 mod tests {
   use super::*;
 
-  fn check(input: &str, kind: SyntaxKind) {
+  fn check(input: &str, kind: TokenKind) {
     let mut lexer = Lexer::new(input);
     assert_eq!(lexer.next(), Some(Token { kind, text: input }));
   }
 
   #[test]
   fn lex_spaces() {
-    check("   ", SyntaxKind::Whitespace);
+    check("   ", TokenKind::Whitespace);
   }
 
   #[test]
   fn lex_spaces_and_newlines() {
-    check("  \n ", SyntaxKind::Whitespace);
+    check("  \n ", TokenKind::Whitespace);
   }
 
   #[test]
   fn lex_func_keyword() {
-    check("func", SyntaxKind::FuncKw);
+    check("func", TokenKind::FuncKw);
   }
 
   #[test]
   fn lex_set_keyword() {
-    check("set", SyntaxKind::SetKw);
+    check("set", TokenKind::SetKw);
   }
 
   #[test]
   fn lex_single_char_identifier() {
-    check("x", SyntaxKind::Identifier);
+    check("x", TokenKind::Identifier);
   }
 
   #[test]
   fn lex_alphabetic_identifier() {
-    check("foo", SyntaxKind::Identifier);
+    check("foo", TokenKind::Identifier);
   }
 
   #[test]
   fn lex_alphanumeric_identifier() {
-    check("foo123", SyntaxKind::Identifier);
+    check("foo123", TokenKind::Identifier);
   }
 
   #[test]
   fn lex_aphabetic_mixed_case_identifier() {
-    check("FOObarBaZ", SyntaxKind::Identifier);
+    check("FOObarBaZ", TokenKind::Identifier);
   }
 
   #[test]
   fn lex_alphanumeric_mixed_case_identifier() {
-    check("fooBARbAz123", SyntaxKind::Identifier);
+    check("fooBARbAz123", TokenKind::Identifier);
   }
 
   #[test]
   fn lex_number() {
-    check("123", SyntaxKind::Number);
+    check("123", TokenKind::Number);
   }
 
   #[test]
   fn lex_plus() {
-    check("+", SyntaxKind::Plus);
+    check("+", TokenKind::Plus);
   }
 
   #[test]
   fn lex_minus() {
-    check("-", SyntaxKind::Minus);
+    check("-", TokenKind::Minus);
   }
 
   #[test]
   fn lex_asterisk() {
-    check("*", SyntaxKind::Asterisk);
+    check("*", TokenKind::Asterisk);
   }
 
   #[test]
   fn lex_slash() {
-    check("/", SyntaxKind::Slash);
+    check("/", TokenKind::Slash);
   }
 
   #[test]
   fn lex_equals() {
-    check("=", SyntaxKind::Equals);
+    check("=", TokenKind::Equals);
   }
 
   #[test]
   fn lex_lbrace() {
-    check("{", SyntaxKind::LBrace);
+    check("{", TokenKind::LBrace);
   }
 
   #[test]
   fn lex_lparen() {
-    check("(", SyntaxKind::LParen);
+    check("(", TokenKind::LParen);
   }
 
   #[test]
   fn lex_rparen() {
-    check(")", SyntaxKind::RParen);
+    check(")", TokenKind::RParen);
   }
 
   #[test]
   fn lex_rbrace() {
-    check("}", SyntaxKind::RBrace);
+    check("}", TokenKind::RBrace);
   }
 
   #[test]
   fn lex_comment() {
-    check("# foo", SyntaxKind::Comment);
+    check("# foo", TokenKind::Comment);
   }
 }
