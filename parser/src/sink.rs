@@ -2,7 +2,7 @@ use super::event::Event;
 use crate::parser::ParseError;
 use crate::Parse;
 use lexer::Token;
-use rowan::{GreenNode, GreenNodeBuilder, Language};
+use rowan::{GreenNodeBuilder, Language};
 use std::mem;
 use syntax::{MonkeLanguage, SyntaxKind};
 

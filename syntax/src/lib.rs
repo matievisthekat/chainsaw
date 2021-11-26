@@ -1,3 +1,4 @@
+use std::fmt;
 use lexer::TokenKind;
 use num_derive::{FromPrimitive, ToPrimitive};
 use num_traits::{FromPrimitive, ToPrimitive};
@@ -32,6 +33,29 @@ pub enum SyntaxKind {
 impl SyntaxKind {
   pub fn is_trivia(self) -> bool {
     matches!(self, Self::Whitespace | Self::Comment)
+  }
+}
+
+impl fmt::Display for SyntaxKind {
+  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+    f.write_str(match self {
+      SyntaxKind::Whitespace => "whitespace",
+      SyntaxKind::FuncKw => "‘fn’",
+      SyntaxKind::SetKw => "‘let’",
+      SyntaxKind::Identifier => "identifier",
+      SyntaxKind::Number => "number",
+      SyntaxKind::Plus => "‘+’",
+      SyntaxKind::Minus => "‘-’",
+      SyntaxKind::Asterisk => "‘*’",
+      SyntaxKind::Slash => "‘/’",
+      SyntaxKind::Equals => "‘=’",
+      SyntaxKind::LParen => "‘(’",
+      SyntaxKind::RParen => "‘)’",
+      SyntaxKind::LBrace => "‘{’",
+      SyntaxKind::RBrace => "‘}’",
+      SyntaxKind::Comment => "comment",
+      _ => unreachable!(),
+    })
   }
 }
 
