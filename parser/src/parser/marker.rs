@@ -1,5 +1,5 @@
-use super::event::Event;
 use super::Parser;
+use crate::event::Event;
 use drop_bomb::DropBomb;
 use syntax::SyntaxKind;
 
