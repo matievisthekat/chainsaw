@@ -1,6 +1,6 @@
 use super::event::Event;
 use super::Parser;
-use crate::lexer::TokenKind;
+use crate::syntax::SyntaxKind;
 use drop_bomb::DropBomb;
 
 pub(super) struct Marker {
@@ -16,7 +16,7 @@ impl Marker {
     }
   }
 
-  pub(super) fn complete(mut self, p: &mut Parser, kind: TokenKind) -> CompletedMarker {
+  pub(super) fn complete(mut self, p: &mut Parser, kind: SyntaxKind) -> CompletedMarker {
     self.bomb.defuse();
     let event_at_pos = &mut p.events[self.pos];
     assert_eq!(*event_at_pos, Event::Placeholder);

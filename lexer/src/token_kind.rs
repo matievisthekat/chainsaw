@@ -5,7 +5,7 @@ pub struct Lexer<'a> {
 }
 
 impl<'a> Lexer<'a> {
-  pub(crate) fn new(input: &'a str) -> Self {
+  pub fn new(input: &'a str) -> Self {
     Self {
       inner: TokenKind::lexer(input),
     }

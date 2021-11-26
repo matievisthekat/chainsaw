@@ -1,4 +1,5 @@
-use crate::lexer::{Token, TokenKind};
+use crate::syntax::SyntaxKind;
+use lexer::Token;
 
 pub(super) struct Source<'t, 'input> {
   tokens: &'t [Token<'input>],
@@ -19,7 +20,7 @@ impl<'t, 'input> Source<'t, 'input> {
     Some(token)
   }
 
-  pub(super) fn peek_kind(&mut self) -> Option<TokenKind> {
+  pub(super) fn peek_kind(&mut self) -> Option<SyntaxKind> {
     self.eat_trivia();
     self.peek_kind_raw()
   }
@@ -31,10 +32,13 @@ impl<'t, 'input> Source<'t, 'input> {
   }
 
   fn at_trivia(&self) -> bool {
-    self.peek_kind_raw().map_or(false, TokenKind::is_trivia)
+    self.peek_kind_raw().map_or(false, SyntaxKind::is_trivia)
   }
 
-  fn peek_kind_raw(&self) -> Option<TokenKind> {
-    self.tokens.get(self.cursor).map(|Token { kind, .. }| *kind)
+  fn peek_kind_raw(&self) -> Option<SyntaxKind> {
+    self
+      .tokens
+      .get(self.cursor)
+      .map(|Token { kind, .. }| (*kind).into())
   }
 }

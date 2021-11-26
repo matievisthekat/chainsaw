@@ -1,6 +1,6 @@
 use super::event::Event;
-use crate::lexer::Token;
-use crate::syntax::MonkeLanguage;
+use crate::syntax::{MonkeLanguage, SyntaxKind};
+use lexer::Token;
 use rowan::{GreenNode, GreenNodeBuilder, Language};
 use std::mem;
 
@@ -68,14 +68,14 @@ impl<'t, 'input> Sink<'t, 'input> {
 
     self
       .builder
-      .token(MonkeLanguage::kind_to_raw(kind), text.into());
+      .token(MonkeLanguage::kind_to_raw(kind.into()), text.into());
 
     self.cursor += 1;
   }
 
   fn eat_trivia(&mut self) {
     while let Some(token) = self.tokens.get(self.cursor) {
-      if !token.kind.is_trivia() {
+      if !SyntaxKind::from(token.kind).is_trivia() {
         break;
       }
 

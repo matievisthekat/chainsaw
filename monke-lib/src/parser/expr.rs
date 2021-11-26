@@ -1,5 +1,5 @@
+use crate::syntax::SyntaxKind;
 use super::Parser;
-use crate::lexer::TokenKind;
 use crate::parser::marker::CompletedMarker;
 
 pub(super) fn expr(p: &mut Parser) {
@@ -8,18 +8,18 @@ pub(super) fn expr(p: &mut Parser) {
 
 pub(super) fn expr_binding_power(p: &mut Parser, minimum_binding_power: u8) {
   let mut lhs = match p.peek() {
-    Some(TokenKind::Number) => literal(p),
-    Some(TokenKind::Identifier) => variable_ref(p),
-    Some(TokenKind::Minus) => prefix_expr(p),
-    Some(TokenKind::LParen) => paren_expr(p),
+    Some(SyntaxKind::Number) => literal(p),
+    Some(SyntaxKind::Identifier) => variable_ref(p),
+    Some(SyntaxKind::Minus) => prefix_expr(p),
+    Some(SyntaxKind::LParen) => paren_expr(p),
     _ => return, // we’ll handle errors later.
   };
   loop {
     let op = match p.peek() {
-      Some(TokenKind::Plus) => BinaryOp::Add,
-      Some(TokenKind::Minus) => BinaryOp::Sub,
-      Some(TokenKind::Asterisk) => BinaryOp::Mul,
-      Some(TokenKind::Slash) => BinaryOp::Div,
+      Some(SyntaxKind::Plus) => BinaryOp::Add,
+      Some(SyntaxKind::Minus) => BinaryOp::Sub,
+      Some(SyntaxKind::Asterisk) => BinaryOp::Mul,
+      Some(SyntaxKind::Slash) => BinaryOp::Div,
       _ => return, // we’ll handle errors later.
     };
 
@@ -34,28 +34,28 @@ pub(super) fn expr_binding_power(p: &mut Parser, minimum_binding_power: u8) {
 
     let m = lhs.precede(p);
     expr_binding_power(p, right_binding_power);
-    lhs = m.complete(p, TokenKind::InfixExpr);
+    lhs = m.complete(p, SyntaxKind::InfixExpr);
   }
 }
 
 fn literal(p: &mut Parser) -> CompletedMarker {
-  assert!(p.at(TokenKind::Number));
+  assert!(p.at(SyntaxKind::Number));
 
   let m = p.start();
   p.bump();
-  m.complete(p, TokenKind::Literal)
+  m.complete(p, SyntaxKind::Literal)
 }
 
 fn variable_ref(p: &mut Parser) -> CompletedMarker {
-  assert!(p.at(TokenKind::Identifier));
+  assert!(p.at(SyntaxKind::Identifier));
 
   let m = p.start();
   p.bump();
-  m.complete(p, TokenKind::VariableRef)
+  m.complete(p, SyntaxKind::VariableRef)
 }
 
 fn prefix_expr(p: &mut Parser) -> CompletedMarker {
-  assert!(p.at(TokenKind::Minus));
+  assert!(p.at(SyntaxKind::Minus));
 
   let m = p.start();
 
@@ -67,21 +67,21 @@ fn prefix_expr(p: &mut Parser) -> CompletedMarker {
 
   expr_binding_power(p, right_binding_power);
 
-  m.complete(p, TokenKind::PrefixExpr)
+  m.complete(p, SyntaxKind::PrefixExpr)
 }
 
 fn paren_expr(p: &mut Parser) -> CompletedMarker {
-  assert!(p.at(TokenKind::LParen));
+  assert!(p.at(SyntaxKind::LParen));
 
   let m = p.start();
 
   p.bump();
   expr_binding_power(p, 0);
 
-  assert!(p.at(TokenKind::RParen));
+  assert!(p.at(SyntaxKind::RParen));
   p.bump();
 
-  m.complete(p, TokenKind::ParenExpr)
+  m.complete(p, SyntaxKind::ParenExpr)
 }
 
 enum BinaryOp {
