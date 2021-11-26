@@ -1,7 +1,9 @@
 use lexer::TokenKind;
 use num_derive::{FromPrimitive, ToPrimitive};
 use num_traits::{FromPrimitive, ToPrimitive};
-use std::fmt;
+
+pub type SyntaxNode = rowan::SyntaxNode<MonkeLanguage>;
+pub type SyntaxToken = rowan::SyntaxToken<MonkeLanguage>;
 
 #[derive(Debug, Copy, Clone, PartialEq, FromPrimitive, ToPrimitive)]
 pub enum SyntaxKind {
@@ -52,8 +54,6 @@ impl From<TokenKind> for SyntaxKind {
     }
   }
 }
-
-pub type SyntaxNode = rowan::SyntaxNode<MonkeLanguage>;
 
 #[derive(Debug, Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash)]
 pub enum MonkeLanguage {}
