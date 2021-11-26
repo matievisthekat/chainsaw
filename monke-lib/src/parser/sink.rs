@@ -1,8 +1,8 @@
 use super::event::Event;
-use crate::syntax::{MonkeLanguage, SyntaxKind};
 use lexer::Token;
 use rowan::{GreenNode, GreenNodeBuilder, Language};
 use std::mem;
+use syntax::{MonkeLanguage, SyntaxKind};
 
 pub(super) struct Sink<'t, 'input> {
   builder: GreenNodeBuilder<'static>,

@@ -3,7 +3,7 @@ use num_derive::{FromPrimitive, ToPrimitive};
 use num_traits::{FromPrimitive, ToPrimitive};
 
 #[derive(Debug, Copy, Clone, PartialEq, FromPrimitive, ToPrimitive)]
-pub(crate) enum SyntaxKind {
+pub enum SyntaxKind {
   Whitespace,
   FuncKw,
   SetKw,
@@ -29,7 +29,7 @@ pub(crate) enum SyntaxKind {
 }
 
 impl SyntaxKind {
-  pub(crate) fn is_trivia(self) -> bool {
+  pub fn is_trivia(self) -> bool {
     matches!(self, Self::Whitespace | Self::Comment)
   }
 }
@@ -57,10 +57,10 @@ impl From<TokenKind> for SyntaxKind {
   }
 }
 
-pub(crate) type SyntaxNode = rowan::SyntaxNode<MonkeLanguage>;
+pub type SyntaxNode = rowan::SyntaxNode<MonkeLanguage>;
 
 #[derive(Debug, Copy, Clone, Ord, PartialOrd, Eq, PartialEq, Hash)]
-pub(crate) enum MonkeLanguage {}
+pub enum MonkeLanguage {}
 
 impl rowan::Language for MonkeLanguage {
   type Kind = SyntaxKind;
