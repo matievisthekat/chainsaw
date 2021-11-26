@@ -8,13 +8,13 @@ pub(crate) fn expr_binding_power(
   p: &mut Parser,
   minimum_binding_power: u8,
 ) -> Option<CompletedMarker> {
-  let mut lhs = if p.at(SyntaxKind::Number) {
+  let mut lhs = if p.at(TokenKind::Number) {
     literal(p)
-  } else if p.at(SyntaxKind::Identifier) {
+  } else if p.at(TokenKind::Identifier) {
     variable_ref(p)
-  } else if p.at(SyntaxKind::Minus) {
+  } else if p.at(TokenKind::Minus) {
     prefix_expr(p)
-  } else if p.at(SyntaxKind::LParen) {
+  } else if p.at(TokenKind::LParen) {
     paren_expr(p)
   } else {
     p.error();
@@ -22,13 +22,13 @@ pub(crate) fn expr_binding_power(
   };
 
   loop {
-    let op = if p.at(SyntaxKind::Plus) {
+    let op = if p.at(TokenKind::Plus) {
       BinaryOp::Add
-    } else if p.at(SyntaxKind::Minus) {
+    } else if p.at(TokenKind::Minus) {
       BinaryOp::Sub
-    } else if p.at(SyntaxKind::Asterisk) {
+    } else if p.at(TokenKind::Asterisk) {
       BinaryOp::Mul
-    } else if p.at(SyntaxKind::Slash) {
+    } else if p.at(TokenKind::Slash) {
       BinaryOp::Div
     } else {
       // We're not at an operator; we don't know what to do next, so we return and let the
@@ -57,7 +57,7 @@ pub(crate) fn expr_binding_power(
 }
 
 fn literal(p: &mut Parser) -> CompletedMarker {
-  assert!(p.at(SyntaxKind::Number));
+  assert!(p.at(TokenKind::Number));
 
   let m = p.start();
   p.bump();
@@ -65,7 +65,7 @@ fn literal(p: &mut Parser) -> CompletedMarker {
 }
 
 fn variable_ref(p: &mut Parser) -> CompletedMarker {
-  assert!(p.at(SyntaxKind::Identifier));
+  assert!(p.at(TokenKind::Identifier));
 
   let m = p.start();
   p.bump();
@@ -73,7 +73,7 @@ fn variable_ref(p: &mut Parser) -> CompletedMarker {
 }
 
 fn prefix_expr(p: &mut Parser) -> CompletedMarker {
-  assert!(p.at(SyntaxKind::Minus));
+  assert!(p.at(TokenKind::Minus));
 
   let m = p.start();
 
@@ -89,12 +89,12 @@ fn prefix_expr(p: &mut Parser) -> CompletedMarker {
 }
 
 fn paren_expr(p: &mut Parser) -> CompletedMarker {
-  assert!(p.at(SyntaxKind::LParen));
+  assert!(p.at(TokenKind::LParen));
 
   let m = p.start();
   p.bump();
   expr_binding_power(p, 0);
-  p.expect(SyntaxKind::RParen);
+  p.expect(TokenKind::RParen);
 
   m.complete(p, SyntaxKind::ParenExpr)
 }

@@ -30,35 +30,6 @@ pub enum SyntaxKind {
   VariableDef,
 }
 
-impl SyntaxKind {
-  pub fn is_trivia(self) -> bool {
-    matches!(self, Self::Whitespace | Self::Comment)
-  }
-}
-
-impl fmt::Display for SyntaxKind {
-  fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-    f.write_str(match self {
-      SyntaxKind::Whitespace => "whitespace",
-      SyntaxKind::FuncKw => "'func'",
-      SyntaxKind::SetKw => "'set'",
-      SyntaxKind::Identifier => "identifier",
-      SyntaxKind::Number => "number",
-      SyntaxKind::Plus => "'+'",
-      SyntaxKind::Minus => "'-'",
-      SyntaxKind::Asterisk => "'*'",
-      SyntaxKind::Slash => "'/'",
-      SyntaxKind::Equals => "'='",
-      SyntaxKind::LParen => "'('",
-      SyntaxKind::RParen => "')'",
-      SyntaxKind::LBrace => "'{'",
-      SyntaxKind::RBrace => "'}'",
-      SyntaxKind::Comment => "comment",
-      _ => unreachable!(),
-    })
-  }
-}
-
 impl From<TokenKind> for SyntaxKind {
   fn from(token_kind: TokenKind) -> Self {
     match token_kind {
