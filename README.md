@@ -17,7 +17,7 @@
   
 #### Syntax
 ```
-func main:[] -> int32 {
+func main:[] -> int {
   set x = 2 * 5;
   set y = x + 9;
   
