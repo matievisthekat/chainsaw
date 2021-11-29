@@ -16,6 +16,7 @@ impl fmt::Display for TokenKind {
       Self::SemiColon => "';'",
       Self::Identifier => "identifier",
       Self::Number => "number",
+      Self::String => "string",
       Self::Plus => "'+'",
       Self::Minus => "'-'",
       Self::Asterisk => "'*'",
@@ -47,6 +48,9 @@ pub enum TokenKind {
 
   #[regex("[0-9]+")]
   Number,
+
+  #[regex("\".*\"")]
+  String,
 
   #[token("+")]
   Plus,
