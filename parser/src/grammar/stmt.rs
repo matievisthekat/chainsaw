@@ -18,6 +18,8 @@ fn variable_def(p: &mut Parser) -> CompletedMarker {
 
   expr::expr(p);
 
+  p.expect(TokenKind::SemiColon);
+
   m.complete(p, SyntaxKind::VariableDef)
 }
 
@@ -29,18 +31,19 @@ mod tests {
   #[test]
   fn parse_variable_definition() {
     check(
-      "set foo = bar",
+      "set foo = bar;",
       expect![[r#"
-Root@0..13
-  VariableDef@0..13
-    SetKw@0..3 "set"
-    Whitespace@3..4 " "
-    Identifier@4..7 "foo"
-    Whitespace@7..8 " "
-    Equals@8..9 "="
-    Whitespace@9..10 " "
-    VariableRef@10..13
-      Identifier@10..13 "bar""#]],
+          Root@0..14
+            VariableDef@0..14
+              SetKw@0..3 "set"
+              Whitespace@3..4 " "
+              Identifier@4..7 "foo"
+              Whitespace@7..8 " "
+              Equals@8..9 "="
+              Whitespace@9..10 " "
+              VariableRef@10..13
+                Identifier@10..13 "bar"
+              SemiColon@13..14 ";""#]],
     );
   }
 
@@ -66,7 +69,9 @@ Root@0..13
               Whitespace@15..16 " "
               VariableRef@16..17
                 Identifier@16..17 "a"
-          error at 8..11: expected number, identifier, '-' or '(', but found 'set'"#]],
+          error at 8..11: expected number, identifier, '-' or '(', but found 'set'
+          error at 8..11: expected ';', but found 'set'
+          error at 16..17: expected '+', '-', '*', '/' or ';'"#]],
     );
   }
 }
