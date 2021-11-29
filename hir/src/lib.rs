@@ -26,7 +26,7 @@ pub enum Expr {
     lhs: ExprIdx,
     rhs: ExprIdx,
   },
-  Literal {
+  Number {
     n: Option<u64>,
   },
   Unary {

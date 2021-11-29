@@ -1,4 +1,4 @@
-use crate::Literal;
+use crate::Number;
 use std::fmt;
 use syntax::SyntaxNode;
 use text_size::TextRange;
@@ -40,7 +40,7 @@ pub fn validate(node: &SyntaxNode) -> Vec<ValidationError> {
   let mut errors = Vec::new();
 
   for node in node.descendants() {
-    if let Some(literal) = Literal::cast(node) {
+    if let Some(literal) = Number::cast(node) {
       validate_literal(literal, &mut errors)
     }
   }
@@ -48,7 +48,7 @@ pub fn validate(node: &SyntaxNode) -> Vec<ValidationError> {
   errors
 }
 
-fn validate_literal(literal: Literal, errors: &mut Vec<ValidationError>) {
+fn validate_literal(literal: Number, errors: &mut Vec<ValidationError>) {
   if literal.parse().is_none() {
     errors.push(ValidationError {
       kind: ValidationErrorKind::NumberLiteralTooLarge,

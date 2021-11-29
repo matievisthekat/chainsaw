@@ -34,7 +34,7 @@ Root@0..12
     Whitespace@5..6 " "
     Equals@6..7 "="
     Whitespace@7..8 " "
-    Literal@8..9
+    Number@8..9
       Number@8..9 "1"
     SemiColon@9..10 ";"
     Whitespace@10..11 "\n"
