@@ -13,11 +13,11 @@
 * green -> build dependency (doesn't contribute code)
 * black -> normal dependency
 
-<img src="https://github.com/matievisthekat/monke/blob/master/dependency_graph.svg" />
+<img src="https://github.com/matievisthekat/monke/blob/master/dependency_graph.png" />
   
 #### Syntax
 ```
-func main:[] -> int32 {
+func main:[] -> int {
   set x = 2 * 5;
   set y = x + 9;
   
