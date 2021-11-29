@@ -13,6 +13,7 @@ impl fmt::Display for TokenKind {
       Self::Whitespace => "whitespace",
       Self::FuncKw => "'func'",
       Self::SetKw => "'set'",
+      Self::SemiColon => "';'",
       Self::Identifier => "identifier",
       Self::Number => "number",
       Self::Plus => "'+'",
@@ -37,6 +38,9 @@ pub enum TokenKind {
 
   #[token("set")]
   SetKw,
+
+  #[token(";")]
+  SemiColon,
 
   #[regex("[A-Za-z][A-Za-z0-9]*")]
   Identifier,
