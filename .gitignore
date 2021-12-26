@@ -1,5 +1,2 @@
 /target
 Cargo.lock
-
-fuzz/corpus
-fuzz/artifacts
